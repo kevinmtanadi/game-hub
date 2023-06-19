@@ -28,18 +28,24 @@ const useGames = () => {
 
     useEffect(() => {
     const controller = new AbortController();
-      apiClient
+
+    setLoading(true);
+    apiClient
         .get<FetchGamesResponse>("/games", { signal: controller.signal})
-        .then((resp) => setGames(resp.data.results))
+        .then((resp) => {
+            setGames(resp.data.results)
+            setLoading(false);
+        })
         .catch((err) => {
             if (err instanceof CanceledError) return;
             setError(err.message);
+            setLoading(false);
         });
 
         return () => controller.abort();
     }, []);
 
-    return { games, error }
+    return { games, error, isLoading };
 }
 
 export default useGames;
